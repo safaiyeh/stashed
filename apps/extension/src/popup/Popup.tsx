@@ -168,9 +168,7 @@ const Popup: React.FC = () => {
       {/* Header */}
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="bg-red-500 rounded-full w-6 h-6 flex items-center justify-center">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21s-8-6.58-8-11.5A7.5 7.5 0 0 1 12 2a7.5 7.5 0 0 1 8 7.5C20 14.42 12 21 12 21Z" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          </span>
+          <img src="/stashed-icon.png" alt="Stashed" className="w-6 h-6" />
           <span className="text-xl font-bold">Stashed</span>
         </div>
         <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium" onClick={() => window.open('https://your-saves-url.com', '_blank')}>View My Saves</button>
