@@ -9,6 +9,7 @@ An open-source alternative to Pocket — a Chrome extension to save, organize, a
 - 🏷️ Tag and organize your saved items (coming soon)
 - ⚡ Fast, privacy-friendly, and works offline (data stored locally)
 - 🧩 Built with [React](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/), and [Vite](https://vitejs.dev/)
+- 🔐 Backend powered by [Supabase](https://supabase.com/) for data persistence
 
 ## Getting Started
 
@@ -23,7 +24,16 @@ cd stashed
 npm install
 ```
 
-### 3. Develop locally
+### 3. Set up Supabase
+1. Create a new project at [Supabase](https://supabase.com)
+2. Create a `.env` file in the root directory with the following variables:
+```bash
+VITE_SUPABASE_URL=your-project-url
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+You can find these values in your Supabase project settings under "Project Settings" > "API"
+
+### 4. Develop locally
 ```bash
 npm run dev
 ```
@@ -31,7 +41,7 @@ npm run dev
 - Enable "Developer mode"
 - Click "Load unpacked" and select the `dist` folder after building
 
-### 4. Build for production
+### 5. Build for production
 ```bash
 npm run build
 ```
