@@ -1,4 +1,4 @@
-name: Build and Check
+name: Build Chrome Extension
 
 on:
   push:
@@ -7,22 +7,29 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-extension:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
-      - name: Type check
+      - name: Build Chrome Extension
+        working-directory: apps/extension
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-        run: npm run build 
+        run: pnpm run build 

@@ -13,13 +13,14 @@ const missingEnvVars = requiredEnvVars.filter(
 
 if (missingEnvVars.length > 0) {
   const isCI = process.env.CI === 'true';
-  const errorMessage = isCI
-    ? `Missing required environment variables in GitHub Actions: ${missingEnvVars.join(', ')}\n` +
-      'Please add these variables to your repository secrets.'
-    : `Missing required environment variables: ${missingEnvVars.join(', ')}\n` +
-      'Please create a .env file with these variables. See README.md for setup instructions.';
+  const isBuild = process.argv.includes('build');
   
-  throw new Error(errorMessage);
+  // Only throw error if not in CI and not building
+  if (!isCI && !isBuild) {
+    const errorMessage = `Missing required environment variables: ${missingEnvVars.join(', ')}\n` +
+      'Please create a .env file with these variables. See README.md for setup instructions.';
+    throw new Error(errorMessage);
+  }
 }
 
 export default defineConfig({

@@ -1,17 +1,21 @@
 {
   "name": "stashed",
   "version": "1.0.0",
-  "description": "A Chrome extension built with React and Tailwind",
-  "type": "module",
+  "private": true,
+  "description": "An open-source alternative to Pocket — a Chrome extension to save, organize, and revisit web pages",
+  "packageManager": "pnpm@10.11.0",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev:extension": "pnpm --filter @stashed/extension dev",
+    "dev:web": "pnpm --filter @stashed/web dev",
+    "build:extension": "pnpm --filter @stashed/extension build",
+    "build:web": "pnpm --filter @stashed/web build",
+    "build": "pnpm run build:extension && pnpm run build:web"
   },
   "keywords": [
     "chrome-extension",
     "react",
-    "tailwind"
+    "tailwind",
+    "supabase"
   ],
   "author": "Jason Safaiyeh <safaiyeh@protonmail.com>",
   "license": "MIT",
@@ -19,21 +23,8 @@
     "url": "https://github.com/safaiyeh/stashed/issues"
   },
   "homepage": "https://github.com/safaiyeh/stashed#readme",
-  "dependencies": {
-    "@supabase/supabase-js": "^2.49.8",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "@types/chrome": "^0.0.260",
-    "@types/node": "^22.15.21",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "@vitejs/plugin-react": "^4.2.0",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31",
-    "tailwindcss": "^3.3.5",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.0"
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
   }
 }
