@@ -45,6 +45,9 @@ Edit `apps/extension/.env` with your values:
 # Supabase Configuration
 VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+
+# App Configuration
+VITE_SAVES_URL=https://your-saves-url.com
 ```
 
 ### 5. Build the shared package

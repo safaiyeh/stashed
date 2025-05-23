@@ -9,7 +9,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // Validate required environment variables
 const requiredEnvVars = [
   'VITE_SUPABASE_URL',
-  'VITE_SUPABASE_ANON_KEY'
+  'VITE_SUPABASE_ANON_KEY',
+  'VITE_SAVES_URL'
 ];
 
 // Plugin to process manifest template

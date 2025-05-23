@@ -171,7 +171,7 @@ const Popup: React.FC = () => {
           <img src="/stashed-icon.png" alt="Stashed" className="w-6 h-6" />
           <span className="text-xl font-bold">Stashed</span>
         </div>
-        <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium" onClick={() => window.open('https://your-saves-url.com', '_blank')}>View My Saves</button>
+        <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium" onClick={() => window.open(import.meta.env.VITE_SAVES_URL, '_blank')}>View My Saves</button>
       </div>
 
       {/* Save/Remove Status */}
