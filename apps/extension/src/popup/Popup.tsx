@@ -1,57 +1,80 @@
 import React, { useEffect, useState } from 'react';
 import { SavedItem } from '../types';
 import LoadingScreen from './components/LoadingScreen';
+import { useSaves } from '../lib/hooks/useSaves';
+import { authService } from '../lib/auth';
 
 const Popup: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab | null>(null);
-  const [savedItems, setSavedItems] = useState<SavedItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { saves, isLoading, createSave, deleteSave, isCreating, isDeleting } = useSaves();
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [removeStatus, setRemoveStatus] = useState<'idle' | 'removing' | 'removed'>('idle');
-
-  const loadSavedItems = async () => {
-    try {
-      const { items } = await chrome.storage.local.get(['items']);
-      if (items) {
-        setSavedItems(items);
-      }
-    } catch (error) {
-      console.error('Error loading saved items:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSave = async () => {
     if (!currentTab?.url || !currentTab?.title) return;
 
     setSaveStatus('saving');
-    const newItem: SavedItem = {
-      id: Date.now().toString(),
+    
+    // Get OG image URL and description from the page
+    let ogImageUrl: string | undefined;
+    let description: string | undefined;
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (tab.id) {
+        const [{ result }] = await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: () => {
+            // Get OG image
+            const ogImage = document.querySelector('meta[property="og:image"]');
+            const imageUrl = ogImage ? ogImage.getAttribute('content') : null;
+
+            // Get description (try OG description first, then regular meta description)
+            const ogDesc = document.querySelector('meta[property="og:description"]');
+            const metaDesc = document.querySelector('meta[name="description"]');
+            const desc = ogDesc ? ogDesc.getAttribute('content') : 
+                        metaDesc ? metaDesc.getAttribute('content') : null;
+
+            return { imageUrl, description: desc };
+          }
+        });
+        ogImageUrl = result?.imageUrl || undefined;
+        description = result?.description || undefined;
+      }
+    } catch (error) {
+      console.error('Error getting page metadata:', error);
+    }
+
+    const newItem: Omit<SavedItem, 'id'> = {
       url: currentTab.url,
       title: currentTab.title,
-      tags: [],
-      createdAt: Date.now(),
-      favicon: currentTab.favIconUrl
+      created_at: new Date().toISOString(),
+      favicon_url: currentTab.favIconUrl,
+      og_image_url: ogImageUrl,
+      description
     };
 
     try {
-      const updatedItems = [newItem, ...savedItems];
-      await chrome.storage.local.set({ items: updatedItems });
-      setSavedItems(updatedItems);
+      await createSave(newItem);
       setSaveStatus('saved');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving item:', error);
+      if (error.message === 'No active session') {
+        await authService.redirectToLogin();
+      }
+      setSaveStatus('idle');
     }
   };
 
   const handleRemove = async () => {
+    if (!currentTab?.url) return;
+    
     setRemoveStatus('removing');
     try {
-      const filtered = savedItems.filter(item => item.url !== currentTab?.url);
-      await chrome.storage.local.set({ items: filtered });
-      setSavedItems(filtered);
-      setRemoveStatus('removed');
+      const saveToRemove = saves?.find(save => save.url === currentTab.url);
+      if (saveToRemove) {
+        await deleteSave(saveToRemove.id);
+        setRemoveStatus('removed');
+      }
     } catch (error) {
       console.error('Error removing item:', error);
       setRemoveStatus('idle');
@@ -63,30 +86,33 @@ const Popup: React.FC = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       setCurrentTab(tabs[0]);
     });
-
-    loadSavedItems();
   }, []);
 
   // Auto-save when current tab is available
   useEffect(() => {
     if (currentTab && !isLoading) {
-      handleSave();
+      const isAlreadySaved = saves?.some(save => save.url === currentTab.url);
+      if (!isAlreadySaved) {
+        handleSave();
+      }
     }
-  }, [currentTab, isLoading]);
+  }, [currentTab, isLoading, saves]);
 
   if (isLoading) {
     return <LoadingScreen />;
   }
 
+  const isSaved = saves?.some(save => save.url === currentTab?.url);
+
   // Status message logic
   let statusMessage = '';
-  if (removeStatus === 'removing') {
+  if (removeStatus === 'removing' || isDeleting) {
     statusMessage = 'Removing...';
   } else if (removeStatus === 'removed') {
     statusMessage = 'Page Removed';
-  } else if (saveStatus === 'saving') {
+  } else if (saveStatus === 'saving' || isCreating) {
     statusMessage = 'Saving...';
-  } else if (saveStatus === 'saved') {
+  } else if (saveStatus === 'saved' || isSaved) {
     statusMessage = 'Saved to Stashed!';
   }
 
@@ -100,9 +126,9 @@ const Popup: React.FC = () => {
       {/* Save/Remove Status */}
       <div className="px-4 py-2 flex items-center justify-between">
         <p className="text-xl font-bold text-gray-900">
-          {statusMessage}
+          {statusMessage || (isSaved ? 'Saved to Stashed!' : 'Save to Stashed')}
         </p>
-        {saveStatus === 'saved' && removeStatus === 'idle' && currentTab && (
+        {isSaved && removeStatus === 'idle' && currentTab && (
           <button
             className="text-blue-600 text-sm font-medium hover:underline ml-4"
             onClick={handleRemove}
