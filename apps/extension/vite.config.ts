@@ -65,7 +65,11 @@ export default defineConfig(({ mode }) => {
         },
         output: {
           entryFileNames: '[name]/index.js',
-          chunkFileNames: '[name]/index.js',
+          chunkFileNames: (chunkInfo) => {
+            // Replace underscore prefixes to avoid Chrome extension issues
+            const name = chunkInfo.name?.replace(/^_/, '') || 'chunk';
+            return `chunks/${name}-[hash].js`;
+          },
           assetFileNames: '[name]/[name][extname]',
         },
       },
