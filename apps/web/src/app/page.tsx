@@ -3,6 +3,34 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
+      <div className="bg-indigo-50">
+        <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between flex-wrap">
+            <div className="flex w-0 flex-1 items-center">
+              <span className="flex rounded-lg bg-indigo-100 p-2">
+                <svg className="h-5 w-5 text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
+                </svg>
+              </span>
+              <p className="ml-3 truncate font-medium text-indigo-800">
+                <span className="md:hidden">Help us build Pocket import!</span>
+                <span className="hidden md:inline">Attention Pocket power users! If you're a Pocket user, please help us by sharing your export data.</span>
+              </p>
+            </div>
+            <div className="order-3 mt-2 w-full flex-shrink-0 sm:order-2 sm:mt-0 sm:w-auto">
+              <a
+                href="https://github.com/safaiyeh/stashed/issues/1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center rounded-md bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-800 hover:bg-indigo-200"
+              >
+                Learn more on GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <main className="max-w-4xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <div className="text-center">
           <div className="flex items-center justify-center mb-8">
