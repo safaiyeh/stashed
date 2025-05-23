@@ -10,7 +10,6 @@ An open-source alternative to Pocket — a Chrome extension to save, organize, a
 - ⚡ Fast and privacy-friendly
 - 🧩 Built with [React](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/), and [Vite](https://vitejs.dev/)
 - 🔐 Backend powered by [Supabase](https://supabase.com/) for data persistence
-- 🔗 Seamless authentication between web app and extension
 
 ## Getting Started
 
@@ -43,25 +42,6 @@ Edit `apps/extension/.env` with your values:
 # Supabase Configuration
 VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-
-# Web App URL (use your deployed URL or localhost for development)
-VITE_WEB_APP_URL=https://your-domain.com
-```
-
-#### Web App Environment Variables
-Copy `apps/web/.env.example` to `apps/web/.env.local`:
-```bash
-cp apps/web/.env.example apps/web/.env.local
-```
-
-Edit `apps/web/.env.local` with your values:
-```env
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-
-# Chrome Extension ID (get this after loading your extension)
-NEXT_PUBLIC_EXTENSION_ID=your-extension-id
 ```
 
 ### 5. Build the shared package
@@ -76,7 +56,7 @@ pnpm run build:shared
 pnpm run dev:extension
 ```
 
-#### Web app:
+#### Web app (optional, for dashboard or landing page):
 ```bash
 pnpm run dev:web
 ```
@@ -86,8 +66,6 @@ pnpm run dev:web
 2. Open Chrome and go to `chrome://extensions/`
 3. Enable "Developer mode"
 4. Click "Load unpacked" and select the `apps/extension/dist` folder
-5. Copy the extension ID from the extension card
-6. Update your web app's `.env.local` with the extension ID
 
 ### 8. Build for production
 ```bash
@@ -96,20 +74,21 @@ pnpm run build
 
 ## Authentication Flow
 
-The app uses a seamless authentication system:
+Authentication is now handled entirely within the extension:
 
-1. User clicks "Save" in the extension
-2. If not authenticated, redirects to web app login
+1. User clicks "Sign in" in the extension popup
+2. A new tab opens with the extension's login page
 3. User logs in via magic link (Supabase Auth)
-4. Web app sends session to extension via secure messaging
-5. Extension can now make authenticated API calls
+4. The extension stores the session and can now make authenticated API calls
+
+No communication with the web app is required for authentication.
 
 ## Project Structure
 
 ```
 ├── packages/
 │   └── shared/             # Shared TypeScript types
-│       ├── src/types/      # Authentication types
+│       ├── src/types/      # Shared types (optional, not required for extension)
 │       └── package.json
 │
 ├── apps/
@@ -117,14 +96,14 @@ The app uses a seamless authentication system:
 │   │   ├── src/
 │   │   │   ├── popup/      # Popup React app (UI)
 │   │   │   ├── background/ # Background scripts
-│   │   │   ├── content/    # Content scripts
+│   │   │   ├── pages/      # Full-page login
 │   │   │   ├── lib/        # Auth service, Supabase client
 │   │   │   ├── config/     # Environment configuration
 │   │   │   └── types/      # TypeScript types
 │   │   ├── public/         # Static assets (manifest template)
 │   │   └── dist/           # Build output (ignored by git)
 │   │
-│   └── web/                # Web app (Next.js, Tailwind)
+│   └── web/                # Web app (Next.js, Tailwind) (optional)
 │       ├── src/            # Next.js source files
 │       ├── public/         # Static assets
 │       └── package.json
@@ -140,13 +119,12 @@ The app uses a seamless authentication system:
 - Only use pnpm for dependency management and scripts
 - The extension manifest is automatically generated from `manifest.template.json` during build
 - Environment variables are validated during build process
-- Shared types ensure consistency between web app and extension
+- Shared types are optional for the extension
 
 ## Contributing
 
 - Please use pnpm for all development tasks
 - See the monorepo structure above for where to add new code
-- Follow the existing authentication patterns when adding new features
 
 ## License
 
