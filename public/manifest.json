@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Stashed",
+  "version": "1.0.0",
+  "description": "An open-source alternative to Pocket for saving and organizing web pages",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "contextMenus"
+  ],
+  "action": {
+    "default_popup": "popup/index.html"
+  },
+  "background": {
+    "service_worker": "background/index.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/index.js"]
+    }
+  ]
+} 
