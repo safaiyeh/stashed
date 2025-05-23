@@ -1,46 +1,77 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { readFileSync, writeFileSync } from 'fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Validate required environment variables
-const requiredEnvVars = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'];
-const missingEnvVars = requiredEnvVars.filter(
-  (envVar) => !process.env[envVar]
-);
+const requiredEnvVars = [
+  'VITE_SUPABASE_URL',
+  'VITE_SUPABASE_ANON_KEY',
+  'VITE_WEB_APP_URL'
+];
 
-if (missingEnvVars.length > 0) {
-  const isCI = process.env.CI === 'true';
-  const isBuild = process.argv.includes('build');
-  
-  // Only throw error if not in CI and not building
-  if (!isCI && !isBuild) {
-    const errorMessage = `Missing required environment variables: ${missingEnvVars.join(', ')}\n` +
-      'Please create a .env file with these variables. See README.md for setup instructions.';
-    throw new Error(errorMessage);
-  }
+// Plugin to process manifest template
+function manifestPlugin() {
+  return {
+    name: 'manifest-plugin',
+    buildStart() {
+      const env = loadEnv('', process.cwd(), '');
+      const templatePath = resolve(__dirname, 'public/manifest.template.json');
+      const outputPath = resolve(__dirname, 'public/manifest.json');
+      
+      try {
+        const template = readFileSync(templatePath, 'utf-8');
+        const manifest = template.replace(/__WEB_APP_URL__/g, env.VITE_WEB_APP_URL || 'https://stashed.app');
+        writeFileSync(outputPath, manifest);
+      } catch (error) {
+        console.warn('Could not process manifest template:', error.message);
+      }
+    }
+  };
 }
 
-export default defineConfig({
-  root: 'src',
-  plugins: [react()],
-  build: {
-    rollupOptions: {
-      input: {
-        popup: resolve(__dirname, 'src/popup/index.html'),
-        background: resolve(__dirname, 'src/background/index.ts'),
-        content: resolve(__dirname, 'src/content/index.ts'),
-      },
-      output: {
-        entryFileNames: '[name]/index.js',
-        chunkFileNames: '[name]/index.js',
-        assetFileNames: '[name]/[name][extname]',
-      },
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  const missingEnvVars = requiredEnvVars.filter(
+    (envVar) => !env[envVar]
+  );
+
+  if (missingEnvVars.length > 0) {
+    const isCI = env.CI === 'true';
+    const isBuild = process.argv.includes('build');
+    
+    if (!isCI && !isBuild) {
+      const errorMessage = `Missing required environment variables: ${missingEnvVars.join(', ')}\n` +
+        'Please create a .env file with these variables. See README.md for setup instructions.';
+      throw new Error(errorMessage);
+    }
+  }
+
+  return {
+    root: 'src',
+    plugins: [react(), manifestPlugin()],
+    define: {
+      'process.env': env
     },
-    outDir: '../dist',
-    emptyOutDir: true,
-  },
-  publicDir: '../public',
+    build: {
+      rollupOptions: {
+        input: {
+          popup: resolve(__dirname, 'src/popup/index.html'),
+          background: resolve(__dirname, 'src/background/index.ts'),
+          content: resolve(__dirname, 'src/content/index.ts'),
+        },
+        output: {
+          entryFileNames: '[name]/index.js',
+          chunkFileNames: '[name]/index.js',
+          assetFileNames: '[name]/[name][extname]',
+        },
+      },
+      outDir: '../dist',
+      emptyOutDir: true,
+    },
+    publicDir: '../public',
+  };
 }); 

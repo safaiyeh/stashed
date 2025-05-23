@@ -4,12 +4,18 @@
   "private": true,
   "description": "An open-source alternative to Pocket — a Chrome extension to save, organize, and revisit web pages",
   "packageManager": "pnpm@10.11.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev:extension": "pnpm --filter @stashed/extension dev",
     "dev:web": "pnpm --filter @stashed/web dev",
+    "dev:shared": "pnpm --filter @stashed/shared dev",
     "build:extension": "pnpm --filter @stashed/extension build",
     "build:web": "pnpm --filter @stashed/web build",
-    "build": "pnpm run build:extension && pnpm run build:web"
+    "build:shared": "pnpm --filter @stashed/shared build",
+    "build": "pnpm run build:shared && pnpm run build:extension && pnpm run build:web"
   },
   "keywords": [
     "chrome-extension",

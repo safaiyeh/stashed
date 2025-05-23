@@ -10,7 +10,7 @@
     "contextMenus"
   ],
   "host_permissions": [
-    "https://stashed.app/*"
+    "__WEB_APP_URL__/*"
   ],
   "action": {
     "default_popup": "popup/index.html"
@@ -21,7 +21,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://stashed.app/*"],
+      "matches": ["__WEB_APP_URL__/*"],
       "js": ["content/index.js"]
     }
   ]
