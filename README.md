@@ -2,17 +2,6 @@
 
 An open-source alternative to Pocket — a Chrome extension to save, organize, and revisit web pages. Built as a monorepo with pnpm workspaces.
 
-## Monorepo Structure
-
-```
-├── apps/
-│   ├── extension/   # Chrome extension (React, Vite, Tailwind)
-│   └── web/         # Web app (Next.js, Tailwind)
-├── pnpm-workspace.yaml
-├── package.json     # Monorepo root
-└── README.md
-```
-
 ## Features
 
 - 📌 Save the current page with one click
@@ -62,18 +51,29 @@ pnpm run build
 ## Project Structure
 
 ```
-├── src/
-│   ├── popup/        # Popup React app (UI)
-│   ├── background/   # Background scripts
-│   ├── content/      # Content scripts
-│   ├── types/        # TypeScript types
-│   └── index.css     # Tailwind CSS entry
-├── public/           # Static assets (manifest, icons)
-├── dist/             # Build output (ignored by git)
-├── vite.config.ts    # Vite configuration
-├── tailwind.config.js
-├── postcss.config.js
-├── package.json
+├── apps/
+│   ├── extension/           # Chrome extension (React, Vite, Tailwind)
+│   │   ├── src/
+│   │   │   ├── popup/      # Popup React app (UI)
+│   │   │   ├── background/ # Background scripts
+│   │   │   ├── content/    # Content scripts
+│   │   │   ├── types/      # TypeScript types
+│   │   │   └── index.css   # Tailwind CSS entry
+│   │   ├── public/         # Static assets (manifest, icons)
+│   │   ├── dist/           # Build output (ignored by git)
+│   │   ├── vite.config.ts  # Vite configuration
+│   │   ├── tailwind.config.js
+│   │   ├── postcss.config.js
+│   │   └── package.json
+│   │
+│   └── web/                # Web app (Next.js, Tailwind)
+│       ├── src/            # Next.js source files
+│       ├── public/         # Static assets
+│       ├── next.config.js  # Next.js configuration
+│       └── package.json
+│
+├── pnpm-workspace.yaml     # PNPM workspace configuration
+├── package.json            # Monorepo root
 └── README.md
 ```
 
