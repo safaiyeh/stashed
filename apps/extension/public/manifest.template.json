@@ -24,5 +24,11 @@
       "matches": ["__WEB_APP_URL__/*"],
       "js": ["content/index.js"]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["pages/login/index.html"],
+      "matches": ["<all_urls>"]
+    }
   ]
 } 

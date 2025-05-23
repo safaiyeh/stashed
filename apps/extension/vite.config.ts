@@ -62,6 +62,7 @@ export default defineConfig(({ mode }) => {
           popup: resolve(__dirname, 'src/popup/index.html'),
           background: resolve(__dirname, 'src/background/index.ts'),
           content: resolve(__dirname, 'src/content/index.ts'),
+          login: resolve(__dirname, 'src/pages/login/index.html'),
         },
         output: {
           entryFileNames: '[name]/index.js',
@@ -71,6 +72,7 @@ export default defineConfig(({ mode }) => {
             return `chunks/${name}-[hash].js`;
           },
           assetFileNames: '[name]/[name][extname]',
+          manualChunks: undefined,
         },
       },
       outDir: '../dist',

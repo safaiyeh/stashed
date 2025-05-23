@@ -13,43 +13,55 @@ const Popup: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const session = await authService.getSession();
-        setIsAuthenticated(!!session);
+  const checkAuth = async () => {
+    try {
+      const session = await authService.getSession();
+      setIsAuthenticated(!!session);
+      
+      if (session) {
+        // Set session in Supabase client
+        supabase.auth.setSession({
+          access_token: session.access_token,
+          refresh_token: session.refresh_token
+        });
         
-        if (session) {
-          // Set session in Supabase client
-          supabase.auth.setSession({
-            access_token: session.access_token,
-            refresh_token: session.refresh_token
-          });
-          
-          // Load saved items from Supabase
-          const { data, error } = await supabase
-            .from('saved_items')
-            .select('*')
-            .order('created_at', { ascending: false });
-          
-          if (!error && data) {
-            setSavedItems(data);
-          }
+        // Load saved items from Supabase
+        const { data, error } = await supabase
+          .from('saved_items')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (!error && data) {
+          setSavedItems(data);
         }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
       }
-    };
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     // Get current tab
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       setCurrentTab(tabs[0]);
     });
 
+    // Listen for auth completion message
+    const messageListener = (message: any) => {
+      if (message.type === 'AUTH_COMPLETE') {
+        checkAuth();
+      }
+    };
+
+    chrome.runtime.onMessage.addListener(messageListener);
     checkAuth();
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(messageListener);
+    };
   }, []);
 
   const handleSave = async () => {

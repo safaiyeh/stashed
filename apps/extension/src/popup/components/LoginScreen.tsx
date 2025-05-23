@@ -1,10 +1,12 @@
 import React from 'react';
-import { authService } from '../../lib/auth';
 import { config } from '../../config/env';
 
 const LoginScreen: React.FC = () => {
   const handleLogin = () => {
-    authService.redirectToLogin();
+    // Open the extension's login page in a new tab
+    chrome.tabs.create({ 
+      url: chrome.runtime.getURL('pages/login/index.html')
+    });
     // Close the popup after redirecting
     window.close();
   };
@@ -38,7 +40,7 @@ const LoginScreen: React.FC = () => {
         </button>
 
         <p className="text-xs text-gray-500 mt-4">
-          We'll open your browser to sign in securely
+          We'll open a new tab to sign in securely
         </p>
       </div>
 
