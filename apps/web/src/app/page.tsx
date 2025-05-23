@@ -14,7 +14,7 @@ export default function Home() {
               </span>
               <p className="ml-3 truncate font-medium text-indigo-800">
                 <span className="md:hidden">Help us build Pocket import!</span>
-                <span className="hidden md:inline">Attention Pocket power users! If you're a Pocket user, please help us by sharing your export data.</span>
+                <span className="hidden md:inline">Attention Pocket power users! If you&apos;re a Pocket user, please help us by sharing your export data.</span>
               </p>
             </div>
             <div className="order-3 mt-2 w-full flex-shrink-0 sm:order-2 sm:mt-0 sm:w-auto">
