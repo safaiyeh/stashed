@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SavedItem } from '../types';
-import LoadingScreen from './components/LoadingScreen';
+import SkeletonLoader from './components/SkeletonLoader';
 import { useSaves } from '../lib/hooks/useSaves';
 import { authService } from '../lib/auth';
 
@@ -99,7 +99,7 @@ const Popup: React.FC = () => {
   }, [currentTab, isLoading, saves]);
 
   if (isLoading) {
-    return <LoadingScreen />;
+    return <SkeletonLoader />;
   }
 
   const isSaved = saves?.some(save => save.url === currentTab?.url);
