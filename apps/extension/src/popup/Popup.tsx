@@ -208,7 +208,7 @@ const Popup: React.FC = () => {
       )}
 
       {/* Tag Input Section */}
-      {isSaved && (
+      {isSaved && removeStatus !== 'removing' && (
         <div className="p-4 border-b border-gray-200">
           <div className="mb-2 font-semibold">Add Tags:</div>
           <div className="flex gap-2 mb-2">
