@@ -4,6 +4,7 @@
 
 # Generated files
 apps/extension/public/manifest.json
+*.zip
 
 # Environment variables
 .env

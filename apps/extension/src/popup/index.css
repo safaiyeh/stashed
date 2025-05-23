@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply min-h-screen md:flex md:items-center md:justify-center bg-gray-50;
+} 
