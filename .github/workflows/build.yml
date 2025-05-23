@@ -27,9 +27,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Build shared package
+        working-directory: packages/shared
+        run: pnpm run build
+
       - name: Build Chrome Extension
         working-directory: apps/extension
         env:
+          VITE_WEB_APP_URL: ${{ secrets.VITE_WEB_APP_URL }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: pnpm run build 
