@@ -74,8 +74,9 @@ export function useSaves() {
   // Mutation for creating a save
   const createMutation = useMutation({
     mutationFn: createSave,
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: [SAVES_QUERY_KEY] });
+      return data;
     },
   });
 
@@ -99,7 +100,7 @@ export function useSaves() {
     saves,
     isLoading,
     error,
-    createSave: createMutation.mutate,
+    createSave: createMutation.mutateAsync,
     updateSave: updateMutation.mutate,
     deleteSave: deleteMutation.mutate,
     isCreating: createMutation.isPending,
