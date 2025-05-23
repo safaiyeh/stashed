@@ -18,7 +18,7 @@ An open-source alternative to Pocket — a Chrome extension to save, organize, a
 - 📌 Save the current page with one click
 - 🗂️ View and manage your saved links in a modern popup UI
 - 🏷️ Tag and organize your saved items (coming soon)
-- ⚡ Fast, privacy-friendly, and works offline (data stored locally)
+- ⚡ Fast and privacy-friendly
 - 🧩 Built with [React](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/), and [Vite](https://vitejs.dev/)
 - 🔐 Backend powered by [Supabase](https://supabase.com/) for data persistence
 
