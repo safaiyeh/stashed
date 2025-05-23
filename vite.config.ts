@@ -12,10 +12,14 @@ const missingEnvVars = requiredEnvVars.filter(
 );
 
 if (missingEnvVars.length > 0) {
-  throw new Error(
-    `Missing required environment variables: ${missingEnvVars.join(', ')}\n` +
-    'Please create a .env file with these variables. See README.md for setup instructions.'
-  );
+  const isCI = process.env.CI === 'true';
+  const errorMessage = isCI
+    ? `Missing required environment variables in GitHub Actions: ${missingEnvVars.join(', ')}\n` +
+      'Please add these variables to your repository secrets.'
+    : `Missing required environment variables: ${missingEnvVars.join(', ')}\n` +
+      'Please create a .env file with these variables. See README.md for setup instructions.';
+  
+  throw new Error(errorMessage);
 }
 
 export default defineConfig({
