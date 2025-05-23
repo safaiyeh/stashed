@@ -1,5 +1,10 @@
-import { Session } from '@stashed/shared';
 import { supabase } from './supabase';
+
+export interface Session {
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
+}
 
 export class AuthService {
   private static instance: AuthService;
