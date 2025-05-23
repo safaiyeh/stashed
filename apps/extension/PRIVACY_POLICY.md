@@ -1,6 +1,6 @@
 # Privacy Policy for Stashed Browser Extension
 
-_Last updated: 2024-06-09_
+_Last updated: 2025-06-09_
 
 ## Overview
 
