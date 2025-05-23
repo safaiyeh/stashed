@@ -1,4 +1,7 @@
-# Stashed
+<div align="center">
+  <img src="logo.png" alt="Stashed Logo" width="128" height="128">
+  <h1>Stashed</h1>
+</div>
 
 An open-source alternative to Pocket — a Chrome extension to save, organize, and revisit web pages. Built as a monorepo with pnpm workspaces.
 
