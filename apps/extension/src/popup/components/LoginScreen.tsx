@@ -1,5 +1,4 @@
 import React from 'react';
-import { config } from '../../config/env';
 
 const LoginScreen: React.FC = () => {
   const handleLogin = () => {
@@ -41,21 +40,6 @@ const LoginScreen: React.FC = () => {
 
         <p className="text-xs text-gray-500 mt-4">
           We'll open a new tab to sign in securely
-        </p>
-      </div>
-
-      {/* Footer */}
-      <div className="p-4 border-t border-gray-100 text-center">
-        <p className="text-xs text-gray-400">
-          Powered by{' '}
-          <a 
-            href={config.webAppUrl} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:text-blue-600"
-          >
-            Stashed
-          </a>
         </p>
       </div>
     </div>

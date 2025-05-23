@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { SavedItem } from '../types';
 import { authService } from '../lib/auth';
 import { supabase } from '../lib/supabase';
-import { config } from '../config/env';
 import LoginScreen from './components/LoginScreen';
 import LoadingScreen from './components/LoadingScreen';
 
@@ -180,18 +179,6 @@ const Popup: React.FC = () => {
             </p>
           )}
         </div>
-        {savedItems.length > 10 && (
-          <div className="mt-3 text-center">
-            <a
-              href={`${config.webAppUrl}/dashboard`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-blue-600 hover:text-blue-700"
-            >
-              View all {savedItems.length} items →
-            </a>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -9,9 +9,6 @@
     "activeTab",
     "contextMenus"
   ],
-  "host_permissions": [
-    "__WEB_APP_URL__/*"
-  ],
   "action": {
     "default_popup": "popup/index.html"
   },
@@ -19,12 +16,6 @@
     "service_worker": "background/index.js",
     "type": "module"
   },
-  "content_scripts": [
-    {
-      "matches": ["__WEB_APP_URL__/*"],
-      "js": ["content/index.js"]
-    }
-  ],
   "web_accessible_resources": [
     {
       "resources": ["pages/login/index.html"],

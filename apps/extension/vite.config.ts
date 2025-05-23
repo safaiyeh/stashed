@@ -9,8 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // Validate required environment variables
 const requiredEnvVars = [
   'VITE_SUPABASE_URL',
-  'VITE_SUPABASE_ANON_KEY',
-  'VITE_WEB_APP_URL'
+  'VITE_SUPABASE_ANON_KEY'
 ];
 
 // Plugin to process manifest template
@@ -24,8 +23,7 @@ function manifestPlugin() {
       
       try {
         const template = readFileSync(templatePath, 'utf-8');
-        const manifest = template.replace(/__WEB_APP_URL__/g, env.VITE_WEB_APP_URL || 'https://stashed.app');
-        writeFileSync(outputPath, manifest);
+        writeFileSync(outputPath, template);
       } catch (error) {
         console.warn('Could not process manifest template:', error.message);
       }
@@ -61,7 +59,6 @@ export default defineConfig(({ mode }) => {
         input: {
           popup: resolve(__dirname, 'src/popup/index.html'),
           background: resolve(__dirname, 'src/background/index.ts'),
-          content: resolve(__dirname, 'src/content/index.ts'),
           login: resolve(__dirname, 'src/pages/login/index.html'),
         },
         output: {

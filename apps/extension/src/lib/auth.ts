@@ -1,6 +1,5 @@
 import { Session } from '@stashed/shared';
 import { supabase } from './supabase';
-import { config } from '../config/env';
 
 export class AuthService {
   private static instance: AuthService;
@@ -64,7 +63,7 @@ export class AuthService {
 
   async redirectToLogin(): Promise<void> {
     chrome.tabs.create({ 
-      url: `${config.webAppUrl}/login?extension_id=${chrome.runtime.id}`
+      url: chrome.runtime.getURL('pages/login/index.html')
     });
   }
 }

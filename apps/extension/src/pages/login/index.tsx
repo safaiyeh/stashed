@@ -89,24 +89,6 @@ const LoginPage: React.FC = () => {
               <p className={`text-sm ${message.type === 'success' ? 'text-green-800' : 'text-red-800'}`}>
                 {message.text}
               </p>
-              {message.type === 'success' && (
-                <div className="flex flex-col items-center mt-4 space-y-2">
-                  <button
-                    className="px-4 py-2 bg-blue-600 text-white rounded"
-                    onClick={() => window.close()}
-                  >
-                    Close Tab
-                  </button>
-                  <button
-                    className="px-4 py-2 bg-green-600 text-white rounded"
-                    onClick={() => {
-                      window.open(chrome.runtime.getURL('popup/index.html'), '_blank');
-                    }}
-                  >
-                    Open Extension
-                  </button>
-                </div>
-              )}
             </div>
           )}
 
