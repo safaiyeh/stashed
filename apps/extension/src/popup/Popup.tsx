@@ -1,43 +1,87 @@
 import React, { useEffect, useState } from 'react';
 import { SavedItem } from '../types';
+import { authService } from '../lib/auth';
+import { supabase } from '../lib/supabase';
+import { config } from '../config/env';
+import LoginScreen from './components/LoginScreen';
+import LoadingScreen from './components/LoadingScreen';
 
 const Popup: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab | null>(null);
   const [savedItems, setSavedItems] = useState<SavedItem[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const session = await authService.getSession();
+        setIsAuthenticated(!!session);
+        
+        if (session) {
+          // Set session in Supabase client
+          supabase.auth.setSession({
+            access_token: session.access_token,
+            refresh_token: session.refresh_token
+          });
+          
+          // Load saved items from Supabase
+          const { data, error } = await supabase
+            .from('saved_items')
+            .select('*')
+            .order('created_at', { ascending: false });
+          
+          if (!error && data) {
+            setSavedItems(data);
+          }
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     // Get current tab
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       setCurrentTab(tabs[0]);
     });
 
-    // Load saved items
-    chrome.storage.local.get(['savedItems'], (result) => {
-      const items = result.savedItems || {};
-      setSavedItems(Object.values(items));
-    });
+    checkAuth();
   }, []);
 
   const handleSave = async () => {
     if (!currentTab?.url || !currentTab?.title) return;
 
     setIsSaving(true);
-    const newItem: SavedItem = {
-      id: Date.now().toString(),
+    const newItem = {
       url: currentTab.url,
       title: currentTab.title,
       tags: [],
-      createdAt: Date.now(),
+      created_at: new Date().toISOString(),
       favicon: currentTab.favIconUrl
     };
 
     try {
-      const result = await chrome.storage.local.get(['savedItems']);
-      const items = result.savedItems || {};
-      items[newItem.id] = newItem;
-      await chrome.storage.local.set({ savedItems: items });
-      setSavedItems([...savedItems, newItem]);
+      const { data, error } = await supabase
+        .from('saved_items')
+        .insert([newItem])
+        .select()
+        .single();
+
+      if (error) {
+        if (error.code === '401') {
+          // Session expired, clear it and show login
+          await authService.clearSession();
+          setIsAuthenticated(false);
+        } else {
+          throw error;
+        }
+      } else {
+        setSavedItems([data, ...savedItems]);
+      }
     } catch (error) {
       console.error('Error saving item:', error);
     } finally {
@@ -45,11 +89,31 @@ const Popup: React.FC = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await authService.clearSession();
+    setIsAuthenticated(false);
+    setSavedItems([]);
+  };
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  if (!isAuthenticated) {
+    return <LoginScreen />;
+  }
+
   return (
     <div className="w-96 min-h-[400px] bg-white">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
         <h1 className="text-xl font-bold text-gray-800">Stashed</h1>
+        <button
+          onClick={handleLogout}
+          className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1 rounded"
+        >
+          Sign out
+        </button>
       </div>
 
       {/* Save Section */}
@@ -78,9 +142,9 @@ const Popup: React.FC = () => {
 
       {/* Saved Items List */}
       <div className="p-4">
-        <h2 className="text-sm font-medium text-gray-700 mb-3">Saved Items</h2>
-        <div className="space-y-3">
-          {savedItems.map((item) => (
+        <h2 className="text-sm font-medium text-gray-700 mb-3">Recent Items</h2>
+        <div className="space-y-3 max-h-64 overflow-y-auto">
+          {savedItems.slice(0, 10).map((item) => (
             <div key={item.id} className="flex items-start space-x-3">
               {item.favicon && (
                 <img src={item.favicon} alt="" className="w-4 h-4 mt-1" />
@@ -100,10 +164,22 @@ const Popup: React.FC = () => {
           ))}
           {savedItems.length === 0 && (
             <p className="text-sm text-gray-500 text-center py-4">
-              No saved items yet
+              No saved items yet. Save your first page!
             </p>
           )}
         </div>
+        {savedItems.length > 10 && (
+          <div className="mt-3 text-center">
+            <a
+              href={`${config.webAppUrl}/dashboard`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-blue-600 hover:text-blue-700"
+            >
+              View all {savedItems.length} items →
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );

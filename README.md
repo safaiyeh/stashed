@@ -138,7 +138,7 @@ The app uses a seamless authentication system:
 
 - All commands should be run from the root of the repository
 - Only use pnpm for dependency management and scripts
-- The extension manifest is generated from a template during build
+- The extension manifest is automatically generated from `manifest.template.json` during build
 - Environment variables are validated during build process
 - Shared types ensure consistency between web app and extension
 
